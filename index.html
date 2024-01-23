@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Muggenzifters</title>
+  </head>
+  <body>
+
+    <main>
+
+      <section class="section_left">
+        <div class="button_group">
+          <button>Kaart</button>
+          <button>Vergelijken</button>
+        </div>
+        <button id="addButton">
+          <img src="/images/addbtn.svg" alt=""> Item toevoegen 
+        </button>
+        <div class="card">
+          <div class="card_header">
+            <h3>Item #1</h3>
+          </div>
+          <div class="filter-option">
+            <input type="checkbox" id="provincieCheckbox" checked>
+            <select class="dropdown" id="provincieDropdown">
+              <!-- <option value="">Selecteer</option> -->
+            </select>
+          </div>
+          <div class="filter-option">
+            <input type="checkbox" id="locatieCheckbox" checked>
+            <select class="dropdown" name="" id="locatieDropdown">
+              <!-- <option value="">Selecteer</option> -->
+            </select>
+          </div>
+          <div class="filter-option">
+            <input type="checkbox" id="landschapCheckbox" checked>
+            <select class="dropdown" name="" id="landschapDropdown">
+              <!-- <option value="">Selecteer</option> -->
+            </select>
+          </div>
+          <button id="filterButton">Toepassen</button>
+        </div>
+        <div id="cardsContainer"></div>
+      </section>
+      
+
+      <section class="section_mid">
+        <!--Hier moet een lijngrafiek komen-->
+        <!--Hier moeten de soorten onder elkaar komen te staan. komen-->
+        <div id="filteredData"></div>
+      </section>
+
+      <section class="section_right">
+        <h2>section3</h2>
+      </section>
+         
+    </main>
+
+    <script type="module" src="/main.js"></script>
+  </body>
+</html>

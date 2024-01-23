@@ -1,0 +1,139 @@
+:root {
+  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+  color-scheme: light dark;
+  color: #213547;
+  background-color: #ffffff;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+}
+
+a {
+  font-weight: 500;
+  color: #646cff;
+  text-decoration: inherit;
+}
+
+a:hover {
+  color: #535bf2;
+}
+
+
+main {
+  display: flex;
+  width: 100%;
+}
+
+.section_left, .section_mid, .section_right {
+  height: 100vh;
+  overflow-y: scroll;
+}
+.section_left {
+  width: 25%;
+}
+.section_mid {
+  
+  width: 50%;
+}
+.section_right {
+  background-color: cornflowerblue;
+  width: 25%;
+}
+
+.button_group {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  gap: 1em;
+  padding: 1em;
+}
+.button_group button{
+  border: none;
+  width: 125px;
+  text-align: left;
+  padding: 1em 0 1em 15px;
+  font-size: 16px;
+  font-weight: 700;
+}
+.button_group button:first-of-type {
+  color: #5C5C5C;
+  background-color: #D9D9D9;
+}
+.button_group button:nth-of-type(2) {
+  color: white;
+  background-color: black;
+}
+.dropdown {
+  width: 200px;
+  padding: .5em 0;
+}
+
+.card {
+  background-color: rgb(236, 236, 236);
+  display: flex;
+  flex-direction: column;
+  padding: 20px;
+  gap: 1em;
+  margin-bottom: 1em;
+}
+
+.filter-option {
+  display: flex;
+  align-items: center;
+  gap: 1em;
+}
+input[type="checkbox"] {
+  width: 25px;
+  height: 25px;
+}
+
+.card_header {
+  display: flex;
+  justify-content: space-between;
+}
+
+.card_header button{
+  border: none;
+  margin-right: 2em;
+  background-color: transparent;
+
+}
+#filterButton {
+  width: 150px;
+  background-color: black;
+  color: white;
+  font-weight: 700;
+  border: none;
+  padding: .5em 0;
+  cursor: pointer;
+}
+
+#addButton {
+  background-color: transparent;
+  border: none;
+  font-size: 16px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: .5em;
+  margin: 1.25em;
+  cursor: pointer;
+}
+#closeButton {
+  cursor: pointer;
+  
+}
+
+.line {
+  fill: none;
+  stroke: steelblue;
+  stroke-width: 2px;
+}
