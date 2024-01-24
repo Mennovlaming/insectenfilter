@@ -11,9 +11,12 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
+
 * {
   margin: 0;
-  padding: 0;
+  padding: 0S;
+  box-sizing: border-box;
+  overflow: hidden;
 }
 
 a {
@@ -30,22 +33,25 @@ a:hover {
 main {
   display: flex;
   width: 100%;
+  
 }
 
 .section_left, .section_mid, .section_right {
   height: 100vh;
-  overflow-y: scroll;
+
+  
 }
 .section_left {
   width: 25%;
+  overflow-y: auto;
 }
 .section_mid {
   
-  width: 50%;
+  width: 45%;
 }
 .section_right {
-  background-color: cornflowerblue;
-  width: 25%;
+  
+  width: 30%;
 }
 
 .button_group {

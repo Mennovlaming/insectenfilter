@@ -1,5 +1,5 @@
 // filterModule.js
-import { filter } from 'd3-array';
+
 import { createLineChart, createBarChart } from './chartModule.js';
 
 let dataset = [];
@@ -49,8 +49,6 @@ export function filterData() {
   });
 
 
-  
-  console.log('Month Counts:', monthCounts);
 
   // Call the function to create the line chart
 
@@ -212,27 +210,19 @@ function getAllFamilies(data) {
   return allFamilies;
 }
 
-export async function updateFilteredFamilies(families) {
-  const filteredFamiliesList = document.getElementById('filteredFamiliesList');
-  filteredFamiliesList.innerHTML = ""; // Clear previous content
 
+export async function updateFilteredFamilies(families) {
+  // Roep createBarChart aan met de tellingen van de families
+  createBarChart(generateFamilyCounts(families));
+}
+
+function generateFamilyCounts(families) {
   const frequencyMap = {};
   families.forEach(family => {
     frequencyMap[family] = (frequencyMap[family] || 0) + 1;
   });
 
-  const familyCounts = Object.entries(frequencyMap).map(([family, count]) => ({ family, count }));
-
-  families.sort((a, b) => frequencyMap[b] - frequencyMap[a] || a.localeCompare(b));
-
-  families.forEach(family => {
-    const listItem = document.createElement('li');
-    listItem.textContent = family;
-    filteredFamiliesList.appendChild(listItem);
-  });
-
-  // Roep createBarChart aan met de tellingen van de families
-  createBarChart(familyCounts);
+  return Object.entries(frequencyMap).map(([family, count]) => ({ family, count }));
 }
 
 
