@@ -1,34 +1,31 @@
-// filterModule.js
-
+// import de charts
 import { createLineChart, createBarChart } from './chartModule.js';
 
 let dataset = [];
 let monthCounts = [];
 
 export function filterData() {
+  // haalt de waarde(value) uit de dropdowns
   const selectedProvincie = document.getElementById("provincieDropdown").value;
   const selectedLocatie = document.getElementById("locatieDropdown").value;
   const selectedLandschap = document.getElementById("landschapDropdown").value;
 
+  //zet ook de checkboxes in een variabele
   const provincieCheckbox = document.getElementById("provincieCheckbox");
   const locatieCheckbox = document.getElementById("locatieCheckbox");
   const landschapCheckbox = document.getElementById("landschapCheckbox");
 
-  // Disable dropdowns based on checkbox status
+  // Disable dropdowns als ze niet gecheckt zijn (!)
   document.getElementById("provincieDropdown").disabled = !provincieCheckbox.checked;
   document.getElementById("locatieDropdown").disabled = !locatieCheckbox.checked;
   document.getElementById("landschapDropdown").disabled = !landschapCheckbox.checked;
 
-  // Update styling based on checkbox status
+  // Update de style als ze gechecked of niet zijn
   updateDropdownStyle("provincieDropdown", provincieCheckbox.checked);
   updateDropdownStyle("locatieDropdown", locatieCheckbox.checked);
   updateDropdownStyle("landschapDropdown", landschapCheckbox.checked);
 
-  console.log('Selected Province:', selectedProvincie);
-  console.log('Selected Locatie:', selectedLocatie);
-  console.log('Selected Landschap:', selectedLandschap);
-
-  // Filter the dataset based on selected values and checkbox status
+  // filter de set op de checkboxes en status van de dropdowns
   const filteredData = dataset.filter(entry => {
     const provincieMatch = !provincieCheckbox.checked || selectedProvincie === '' || entry.region === selectedProvincie;
     const locatieMatch = !locatieCheckbox.checked || selectedLocatie === '' || entry.location === selectedLocatie;
@@ -37,93 +34,86 @@ export function filterData() {
     return provincieMatch && locatieMatch && landschapMatch;
   });
 
-  console.log('Filtered Data:', filteredData);
-
-  // Initialize monthCounts with zero values for all months
+  // Maak een array voor de maanden, tel op tot 12
   const monthCounts = Array.from({ length: 12 }, (_, i) => ({ month: i + 1, count: 0 }));
 
-  // Update monthCounts with counts from the filtered data
+  // Update monthCounts met de gefilterde data
   filteredData.forEach(entry => {
     const month = entry.month;
     monthCounts[month - 1].count += 1;
   });
 
-
-
-  // Call the function to create the line chart
-
+  //roep de chart functie aan met als parameter monthcounts
   createLineChart(monthCounts);
 
+  //Hier word bepaald welke families worden getoond op basis van of het filter actief is of niet. 
   const familiesToDisplay = isFilterActive() ? getAllFamilies(filteredData) : getAllFamilies(dataset);
   updateFilteredFamilies(familiesToDisplay);
   
 }
 
 export function initFilter() {
-  // Return a promise to signal when the data is ready
+  // Promise, zo ja, resolve, zo nee, reject
   return new Promise((resolve, reject) => {
+    //fetch de dataset
     fetch('/data/data21.json')
       .then(response => response.json())
       .then(data => {
         dataset = data;
+        // Log de dataset
         console.log('Data fetched:', dataset);
 
-        // Extract unique provinces from the dataset
+        //Hier pak je alle unieke provincies, zodat je niet letterlijk alles krijgt.
         const uniqueProvinces = [...new Set(dataset.map(entry => entry.region))];
 
-        // Populate the provincieDropdown with the unique provinces
+        // Plaats deze unieke gegevens in de  provinciedropdown, 
+        // HIeronder gebeurt hetzelfde voor landschap en locatie.
         const provincieDropdown = document.getElementById("provincieDropdown");
         provincieDropdown.innerHTML = "<option value=''>Selecteer</option>";
         uniqueProvinces.forEach(province => {
           provincieDropdown.innerHTML += `<option value='${province}'>${province}</option>`;
         });
 
-        // Extract unique landschap types from the dataset
         const uniqueLandschapTypes = [...new Set(dataset.map(entry => entry.type))];
 
-        // Populate the landschapDropdown with the unique landschap types
         const landschapDropdown = document.getElementById("landschapDropdown");
         landschapDropdown.innerHTML = "<option value=''>Selecteer</option>";
         uniqueLandschapTypes.forEach(landschap => {
           landschapDropdown.innerHTML += `<option value='${landschap}'>${landschap}</option>`;
         });
 
-        // Extract unique locations from the dataset
         const uniqueLocations = [...new Set(dataset.map(entry => entry.location))];
 
-        // Populate the locatieDropdown with the unique locations
         const locatieDropdown = document.getElementById("locatieDropdown");
         locatieDropdown.innerHTML = "<option value=''>Selecteer</option>";
         uniqueLocations.forEach(location => {
           locatieDropdown.innerHTML += `<option value='${location}'>${location}</option>`;
         });
 
-        // Initialize monthCounts with zero values for all months
+        // NOg een keer de tellen naar 12 functie ivm veel errors hiermee.
         const monthCounts = Array.from({ length: 12 }, (_, i) => ({ month: i + 1, count: 0 }));
-
-        // Update monthCounts with counts from the entire dataset
         dataset.forEach(entry => {
           const month = entry.month;
           monthCounts[month - 1].count += 1;
         });
 
-        // Call createLineChart with the entire dataset
-        
+        //Roep de linechart nog een keer
         createLineChart(monthCounts);
 
+        // Filter de data, update de dropdowns
         filterData();
 
-        resolve(); // Resolve the promise once data is fetched, dropdowns are populated, and chart is initialized
+        resolve(); // Als de data gefetcht is, en de dropdowns zijn geupdate.
       })
       .catch(error => {
         console.error('Error fetching data:', error);
-        reject(error); // Reject the promise if there's an error
+        reject(error); 
       });
   });
 }
 
 export function setupFilterButton() {
-  // Add event listeners to the filterButton and checkboxes
+  // voeg eventlisteners aan de filterButton en checkboxes
   document.getElementById('filterButton').addEventListener('click', filterData);
   document.getElementById('provincieCheckbox').addEventListener('change', filterData);
   document.getElementById('locatieCheckbox').addEventListener('change', filterData);
@@ -131,11 +121,10 @@ export function setupFilterButton() {
 }
 
 export function getMonthCounts() {
-  // Return the monthCounts array
+  //zorgt ervoor dat montcounts geexporteerd kan worden
   return monthCounts || [];
 }
-
-// Function to update dropdown styling based on checkbox status
+// update styling gebasseerd op de checkbox
 function updateDropdownStyle(dropdownId, isEnabled) {
   const dropdown = document.getElementById(dropdownId);
   dropdown.style.opacity = isEnabled ? "1" : "0.5";
@@ -146,34 +135,33 @@ export function updateDropdownOptions(selectedDropdown, selectedValue) {
   const dropdowns = ['provincieDropdown', 'locatieDropdown', 'landschapDropdown'];
   const selectedDropdownIndex = dropdowns.indexOf(selectedDropdown);
 
-  // Check if "Selecteer" option is selected
+  // Check if "Selecteer" option geselecteerd is, dan wil je namelijk alles laten zien.
   if (selectedValue === '') {
-    // Reset all dropdowns
+    // Reset alle dropdowns
     for (let i = 0; i < dropdowns.length; i++) {
       const dropdown = document.getElementById(dropdowns[i]);
       dropdown.innerHTML = "<option value=''>Selecteer</option>";
     }
 
-    // Call filterData after resetting dropdowns
+    // Roep filter na het resetten van de dropdowns
     filterData();
-    return; // Exit the function to prevent further processing
+    return; // exit/return zodat het niet verder gaat
   }
 
-  // Clear options in dependent dropdowns
+  // REset dropdowns
   for (let i = selectedDropdownIndex + 1; i < dropdowns.length; i++) {
     const dropdown = document.getElementById(dropdowns[i]);
     dropdown.innerHTML = "<option value=''>Selecteer</option>";
   }
 
-  // Update options based on selected value
+  // Update opaties, zoals eerst uitgelegd.
   const filteredData = dataset.filter(entry => entry.region === selectedValue);
 
-  // Update locatie dropdown
+
   if (selectedDropdownIndex + 1 < dropdowns.length) {
     const locatieDropdown = document.getElementById(dropdowns[selectedDropdownIndex + 1]);
     locatieDropdown.innerHTML = "<option value=''>Selecteer</option>";
 
-    // Extract unique locatienames from the filtered dataset
     const uniqueLocations = [...new Set(filteredData.map(entry => entry.location))];
 
     uniqueLocations.forEach(location => {
@@ -181,12 +169,10 @@ export function updateDropdownOptions(selectedDropdown, selectedValue) {
     });
   }
 
-  // Update landschap dropdown
   if (selectedDropdownIndex + 2 < dropdowns.length) {
     const landschapDropdown = document.getElementById(dropdowns[selectedDropdownIndex + 2]);
     landschapDropdown.innerHTML = "<option value=''>Selecteer</option>";
 
-    // Extract unique landstypes from the filtered dataset
     const uniqueLandTypes = [...new Set(filteredData.map(entry => entry.type))];
 
     uniqueLandTypes.forEach(landType => {
@@ -194,12 +180,11 @@ export function updateDropdownOptions(selectedDropdown, selectedValue) {
     });
   }
 
-  // Call filterData after updating dropdown options
+  // filter data
   filterData();
 }
 
 function getAllFamilies(data) {
-  console.log('Data received in getAllFamilies:', data);
 
   if (!Array.isArray(data)) {
     console.error('Data is not an array:', data);
@@ -210,9 +195,8 @@ function getAllFamilies(data) {
   return allFamilies;
 }
 
-
 export async function updateFilteredFamilies(families) {
-  // Roep createBarChart aan met de tellingen van de families
+  // Roep createBarChart aan met de data van de families
   createBarChart(generateFamilyCounts(families));
 }
 
@@ -221,12 +205,13 @@ function generateFamilyCounts(families) {
   families.forEach(family => {
     frequencyMap[family] = (frequencyMap[family] || 0) + 1;
   });
-
+  //returned een object met hoeveelheid dat een bepaalde soort voorkomt.
   return Object.entries(frequencyMap).map(([family, count]) => ({ family, count }));
 }
 
 
 function isFilterActive() {
+  //kijkt of er een filter aan staat.
   const provincieCheckbox = document.getElementById("provincieCheckbox");
   const locatieCheckbox = document.getElementById("locatieCheckbox");
   const landschapCheckbox = document.getElementById("landschapCheckbox");
