@@ -1,20 +1,21 @@
 import * as d3 from 'd3';
 
 export function createLineChart(data) {
+  // kijk of er data is
   if (!data || !Array.isArray(data) || data.length === 0) {
     console.error("Invalid data");
     return;
   }
 
-  // Set up SVG dimensions and margins
+  // standaard waardes voor hoogte breedte en margin
   const margin = { top: 20, right: 20, bottom: 30, left: 50 };
   const width = 700 - margin.left - margin.right;
   const height = 400 - margin.top - margin.bottom;
 
-  // Remove any existing SVG elements
+  // je wilt de huidige svg verwijderen en vullen met eigen data/up te daten met gefilterde data
   d3.select("#filteredData").selectAll("svg").remove();
 
-  // Append the SVG element to the filteredData div
+  // ga naar de id filteredData, voeg daar de svg aan toe
   const svg = d3
     .select("#filteredData")
     .append("svg")
@@ -25,61 +26,63 @@ export function createLineChart(data) {
 
   try {
     if (data && data.length > 0) {
-      // Set up scales
+      // ALs de data meer dan 0 is, wil je de volgende code uitvoeren, zo nee ga je naar else
       const x = d3.scaleLinear().domain([1, 12]).range([0, width]);
       const y = d3.scaleLinear().domain([0, 30]).range([height, 0]);
 
-      // Set up the line function
+      // lijnfunctie
       const line = d3
         .line()
         .x(d => x(d.month))
         .y(d => y(d.count));
 
-      // Add the line path
+      // path van de lijn
       const linePath = svg.append("path")
         .data([data])
         .attr("class", "line")
-        .style("stroke", "blue")  // Pas aan op basis van je kleurlogica
+        .style("stroke", "#6082B6")
+        .style("stroke-width", 3) //Lijndikte
         .attr("d", line);
 
-      // Bereken de totale lengte van de lijn
+      // nodig om te animeren
       const totalLength = linePath.node().getTotalLength();
-
-      // Verberg de lijn aan het begin
+      // je haalt hier eerste de line weg, om hem even later weer terug te halen met een ease en duration van 1sec.
       linePath.attr("stroke-dasharray", totalLength + " " + totalLength)
         .attr("stroke-dashoffset", totalLength)
-        .transition() // Voeg een overgang toe
-        .duration(1000) // Duur van de overgang in milliseconden (1 seconde in dit voorbeeld)
-        .ease(d3.easeLinear) // Kies een overgangsfunctie, bijv. lineair
-        .attr("stroke-dashoffset", 0); // Verander de stroke-dashoffset naar 0 om de lijn te onthullen
+        .transition() 
+        .duration(1000)
+        .ease(d3.easeLinear)
+        .attr("stroke-dashoffset", 0);
 
+        // je animeert ook de circels zodat deze met de lijn mee gaan.
         const circles = svg.selectAll("circle")
         .data(data)
         .enter()
         .append("circle")
         .attr("cx", d => x(d.month))
         .attr("cy", d => y(d.count))
-        .attr("r", 0) // Begin met een straal van 0 om ze te laten verschijnen
-        .attr("fill", "black"); // Pas de vulling aan zoals nodig
+        .attr("r", 0) // begin met een range van 0 om ze te laten verschijnen
+        .attr("fill", "black"); 
       
-      // Voeg animatie toe aan de cirkels
+      // voeg animatie toe aan de cirkels
       circles.transition()
-        .delay((d, i) => i * 100) // Vertraag elke cirkel op basis van de index
-        .duration(200) // Duur van de animatie in milliseconden (0,5 seconden in dit voorbeeld)
-        .attr("r", 5); // Verander de straal naar de gewenste grootte
+        .delay((d, i) => i * 100) // vertraag elke cirkel op basis van de index
+        .duration(200) // duur van de animatie 0.2s
+        .attr("r", 5); //we willen ze van 0 range naar 5 krijgen.
 
-      // Add the X Axis
+      // x-as toevoegen
       svg
         .append("g")
         .attr("transform", "translate(0," + height + ")")
-        .call(d3.axisBottom(x).ticks(12).tickFormat(d3.format("d"))); // Formatteer ticks als integers
+        // 12 ticks
+        .call(d3.axisBottom(x).ticks(12).tickFormat(d3.format("d")));
 
-      // Add the Y Axis
+      // y-as toevoegen
       svg
         .append("g")
         .call(d3.axisLeft(y).ticks(15));
     } else {
-      // Handle the case where data is undefined or empty
+      // als er geen data set is wil je dit loggen en een message geven.
       console.error("DataSets are undefined or empty");
       svg.append("text")
         .attr("x", width / 2)
@@ -92,93 +95,81 @@ export function createLineChart(data) {
   }
 }
 
-
-
 export function createBarChart(familyCounts) {
-  // Selecteer de div waarin de staafdiagram wordt geplaatst
+  // roep de div aan
   const barChartContainer = d3.select('#barChart');
 
-  // Verwijder eventuele eerdere inhoud
+  // leeg deze net als de linechart
   barChartContainer.html('');
 
-  // Bepaal de breedte en hoogte van de staafdiagram
+  // Basis waardes
   const width = 300;
-  const chartHeight = 400; // Vaste hoogte voor de hele grafiek
-
-  // Marges toevoegen indien nodig
+  const chartHeight = 400;
   const margin = { top: 20, right: 20, bottom: 30, left: 50 };
   const height = chartHeight - margin.top - margin.bottom;
 
-  // Sorteer de dataset op basis van het aantal voorkomen (van hoog naar laag)
+  // Sorteer van hoog naar laag
   familyCounts.sort((a, b) => b.count - a.count);
 
-  // Bepaal de schaal voor de x-as (aantal voorkomen)
+  // bepaal de scale voor de x-as
   const xScale = d3.scaleLinear()
-    .domain([0, 15])  // Zet het domein op 0 tot 15
+    .domain([0, 15])  // nummers op de x-as
     .range([0, width]);
 
-  // Vaste hoogte voor de bars
+  // vaste hoogte voor de bars
   const barHeight = 27;
-  const barSpacing = 2; // Vaste afstand tussen de bars
+  const barSpacing = 2; //Vaste spacing tussen de bars
 
-  // Bereken de totale hoogte die de bars zullen innemen
+  // bereken de totale hoogte die de bars zullen innemen
   const totalBarHeight = (barHeight + barSpacing) * familyCounts.length;
 
-  // Bepaal de schaal voor de y-as (families)
+  // bepaal de scale voor de y-as
   const yScale = d3.scaleBand()
     .domain(familyCounts.map(d => d.family))
-    .range([0, totalBarHeight]) // Gebruik de totale hoogte
+    .range([0, totalBarHeight]) //Gebruik de totale hoogte
     .paddingInner(barSpacing / totalBarHeight) // Vaste ruimte tussen de bars
     .paddingOuter(barSpacing / totalBarHeight);
 
-  // Voeg een SVG-element toe aan de div
+  // Voeg een SVG toe aan de div
   const svg = barChartContainer.append('svg')
     .attr('width', width + margin.left + margin.right)
-    .attr('height', chartHeight) // Vaste hoogte voor de hele grafiek
+    .attr('height', chartHeight)
     .append('g')
     .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
 
-  // Voeg de staafjes toe aan de staafdiagram
+  // Voeg de bars toe aan de diagram
   svg.selectAll('rect')
     .data(familyCounts)
     .enter().append('rect')
     .attr('x', 0)
     .attr('y', d => yScale(d.family))
-    .attr('width', 0) // Start met een breedte van 0
+    .attr('width', 0)
     .attr('height', barHeight)
     .attr('fill', '#6082B6')
-    .transition() // Voeg een overgang toe
-    .duration(1000) // Duur van de overgang in milliseconden (1 seconde in dit voorbeeld)
-    .attr('width', d => xScale(d.count)); // Verander de breedte naar de uiteindelijke waarde
+    .transition()// kleine animatie van 1s
+    .duration(1000)
+    .attr('width', d => xScale(d.count));
 
-    
     svg.selectAll('text')
     .data(familyCounts)
     .enter().append('text')
-    .text(d => d.family) // Tekst is de naam van de familie
-    .attr('x', 5) // Plaats de tekst 5 pixels naar rechts vanaf de linkerkant van de bar
-    .attr('y', d => yScale(d.family) + barHeight / 2) // Plaats de tekst in het midden van de bar
-    .style('fill', 'black') // Zorg ervoor dat de tekst leesbaar is op de gekleurde bars
-    .style('font-size', '12px') // Pas de lettergrootte aan zoals gewenst
-    .style('alignment-baseline', 'middle');
+    .text(d => d.family) //tekst is de naam van de soort
+    .attr('x', 5)//5px van de x-as
+    .attr('y', d => yScale(d.family) + barHeight / 2) //Plaats de tekst in het midden van de bar
+    .style('fill', 'black') 
+    .style('font-size', '12px')
+    .style('alignment-baseline', 'middle');//center
 
-  // Voeg x-as toe
+  //x-as toe
   svg.append('g')
     .attr('transform', `translate(0, ${height})`)
     .call(d3.axisBottom(xScale).ticks(8)); // Pas het aantal ticks aan indien nodig
 
-  // Voeg y-as toe
+  //y-as toe
   svg.append('g')
     .call(d3.axisLeft(yScale))
-    .selectAll('text') // Verwijder deze regel om tekst op de y-as te voorkomen
-    .remove() // Verwijder deze regel om tekst op de y-as te voorkomen
+    .selectAll('text')
+    .remove()//voorkom dubbele text
     .style('text-anchor', 'end');
-    
-
-  // Voeg een titel toe
-  svg.append('text')
-    .attr('x', width / 2)
-    .attr('y', height + margin.top)
-    .style('text-anchor', 'middle');
 }
 

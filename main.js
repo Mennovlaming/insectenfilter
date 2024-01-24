@@ -1,8 +1,7 @@
 // main.js
 import './style.css';
-import * as filter from './modules/filterModule.js';
-import * as chartModule from './modules/chartModule.js';
-import * as addFilterModule from './modules/addFilterModule.js';
+import * as filter from '/modules/filterModule.js';
+import * as addFilterModule from '/modules/addFilterModule.js';
 
 // Wacht op het DOMContentLoaded-evenement om ervoor te zorgen dat alle DOM-elementen gereed zijn
 document.addEventListener('DOMContentLoaded', () => {

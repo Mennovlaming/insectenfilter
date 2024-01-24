@@ -11,7 +11,6 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
-
 * {
   margin: 0;
   padding: 0S;
@@ -33,13 +32,10 @@ a:hover {
 main {
   display: flex;
   width: 100%;
-  
 }
 
 .section_left, .section_mid, .section_right {
   height: 100vh;
-
-  
 }
 .section_left {
   width: 25%;
@@ -83,7 +79,6 @@ main {
 }
 
 .card {
-  background-color: rgb(236, 236, 236);
   display: flex;
   flex-direction: column;
   padding: 20px;
