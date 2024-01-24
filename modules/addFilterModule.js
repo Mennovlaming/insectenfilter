@@ -8,7 +8,7 @@ export function initializeAddFilter() {
     var deleteButton = document.createElement('button');
     deleteButton.textContent = 'Verwijder';
     deleteButton.addEventListener('click', function() {
-      // Verwijder de corresponderende filterkaart
+      // Verwijder de kloon
       clonedCard.remove();
     });
 
