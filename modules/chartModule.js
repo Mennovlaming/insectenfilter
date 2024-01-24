@@ -74,3 +74,77 @@ export function createLineChart(data) {
     console.error("Error in createLineChart:", error);
   }
 }
+
+
+export function createBarChart(familyCounts) {
+  // Selecteer de div waarin de staafdiagram wordt geplaatst
+  const barChartContainer = d3.select('#barChart');
+
+  // Verwijder eventuele eerdere inhoud
+  barChartContainer.html('');
+
+  // Bepaal de breedte en hoogte van de staafdiagram
+  const width = 400;
+  const chartHeight = 300; // Vaste hoogte voor de hele grafiek
+
+  // Marges toevoegen indien nodig
+  const margin = { top: 20, right: 20, bottom: 30, left: 50 };
+  const height = chartHeight - margin.top - margin.bottom;
+
+  // Sorteer de dataset op basis van het aantal voorkomen (van hoog naar laag)
+  familyCounts.sort((a, b) => b.count - a.count);
+
+  // Bepaal de schaal voor de x-as (aantal voorkomen)
+  const xScale = d3.scaleLinear()
+    .domain([0, 15])  // Zet het domein op 0 tot 15
+    .range([0, width]);
+
+  // Vaste hoogte voor de bars
+  const barHeight = 18;
+  const barSpacing = 2; // Vaste afstand tussen de bars
+
+  // Bereken de totale hoogte die de bars zullen innemen
+  const totalBarHeight = (barHeight + barSpacing) * familyCounts.length;
+
+  // Bepaal de schaal voor de y-as (families)
+  const yScale = d3.scaleBand()
+    .domain(familyCounts.map(d => d.family))
+    .range([0, totalBarHeight]) // Gebruik de totale hoogte
+    .paddingInner(barSpacing / totalBarHeight) // Vaste ruimte tussen de bars
+    .paddingOuter(barSpacing / totalBarHeight);
+
+  // Voeg een SVG-element toe aan de div
+  const svg = barChartContainer.append('svg')
+    .attr('width', width + margin.left + margin.right)
+    .attr('height', chartHeight) // Vaste hoogte voor de hele grafiek
+    .append('g')
+    .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
+
+  // Voeg de staafjes toe aan de staafdiagram
+  svg.selectAll('rect')
+    .data(familyCounts)
+    .enter().append('rect')
+    .attr('x', 0)
+    .attr('y', d => yScale(d.family))
+    .attr('width', d => xScale(d.count))
+    .attr('height', barHeight) // Vaste hoogte voor de bars
+    .attr('fill', 'steelblue');
+
+  // Voeg x-as toe
+  svg.append('g')
+    .attr('transform', `translate(0, ${height})`)
+    .call(d3.axisBottom(xScale).ticks(15)); // Pas het aantal ticks aan indien nodig
+
+  // Voeg y-as toe
+  svg.append('g')
+    .call(d3.axisLeft(yScale))
+    .selectAll('text')
+    .style('text-anchor', 'end');
+
+  // Voeg een titel toe
+  svg.append('text')
+    .attr('x', width / 2)
+    .attr('y', height + margin.top)
+    .style('text-anchor', 'middle');
+}
+

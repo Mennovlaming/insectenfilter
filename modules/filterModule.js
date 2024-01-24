@@ -1,5 +1,6 @@
 // filterModule.js
-import { createLineChart } from './chartModule.js';
+import { filter } from 'd3-array';
+import { createLineChart, createBarChart } from './chartModule.js';
 
 let dataset = [];
 let monthCounts = [];
@@ -54,6 +55,10 @@ export function filterData() {
   // Call the function to create the line chart
 
   createLineChart(monthCounts);
+
+  const familiesToDisplay = isFilterActive() ? getAllFamilies(filteredData) : getAllFamilies(dataset);
+  updateFilteredFamilies(familiesToDisplay);
+  
 }
 
 export function initFilter() {
@@ -107,6 +112,8 @@ export function initFilter() {
         // Call createLineChart with the entire dataset
         
         createLineChart(monthCounts);
+
+        filterData();
 
         resolve(); // Resolve the promise once data is fetched, dropdowns are populated, and chart is initialized
       })
@@ -192,3 +199,51 @@ export function updateDropdownOptions(selectedDropdown, selectedValue) {
   // Call filterData after updating dropdown options
   filterData();
 }
+
+function getAllFamilies(data) {
+  console.log('Data received in getAllFamilies:', data);
+
+  if (!Array.isArray(data)) {
+    console.error('Data is not an array:', data);
+    return [];
+  }
+
+  const allFamilies = data.map(entry => entry.family);
+  return allFamilies;
+}
+
+export async function updateFilteredFamilies(families) {
+  const filteredFamiliesList = document.getElementById('filteredFamiliesList');
+  filteredFamiliesList.innerHTML = ""; // Clear previous content
+
+  const frequencyMap = {};
+  families.forEach(family => {
+    frequencyMap[family] = (frequencyMap[family] || 0) + 1;
+  });
+
+  const familyCounts = Object.entries(frequencyMap).map(([family, count]) => ({ family, count }));
+
+  families.sort((a, b) => frequencyMap[b] - frequencyMap[a] || a.localeCompare(b));
+
+  families.forEach(family => {
+    const listItem = document.createElement('li');
+    listItem.textContent = family;
+    filteredFamiliesList.appendChild(listItem);
+  });
+
+  // Roep createBarChart aan met de tellingen van de families
+  createBarChart(familyCounts);
+}
+
+
+function isFilterActive() {
+  const provincieCheckbox = document.getElementById("provincieCheckbox");
+  const locatieCheckbox = document.getElementById("locatieCheckbox");
+  const landschapCheckbox = document.getElementById("landschapCheckbox");
+
+  return provincieCheckbox.checked || locatieCheckbox.checked || landschapCheckbox.checked;
+}
+
+
+
+
