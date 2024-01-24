@@ -153,23 +153,23 @@ export function createBarChart(familyCounts) {
     svg.selectAll('text')
     .data(familyCounts)
     .enter().append('text')
-    .text(d => d.family) //tekst is de naam van de soort
-    .attr('x', 5)//5px van de x-as
-    .attr('y', d => yScale(d.family) + barHeight / 2) //Plaats de tekst in het midden van de bar
+    .text(d => d.family) // tekst is de naam van de soort
+    .attr('x', 5)// 5px van de x-as
+    .attr('y', d => yScale(d.family) + barHeight / 2) // Plaats de tekst in het midden van de bar
     .style('fill', 'black') 
     .style('font-size', '12px')
-    .style('alignment-baseline', 'middle');//center
+    .style('alignment-baseline', 'middle');// center
 
-  //x-as toe
+  // x-as toe
   svg.append('g')
     .attr('transform', `translate(0, ${height})`)
-    .call(d3.axisBottom(xScale).ticks(8)); // Pas het aantal ticks aan indien nodig
+    .call(d3.axisBottom(xScale).ticks(8));
 
-  //y-as toe
+  // y-as toe
   svg.append('g')
     .call(d3.axisLeft(yScale))
     .selectAll('text')
-    .remove()//voorkom dubbele text
+    .remove()// voorkom dubbele text
     .style('text-anchor', 'end');
 }
 

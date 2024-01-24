@@ -1,17 +1,17 @@
-// main.js
+// imports, css en andere modules
 import './style.css';
 import * as filter from '/modules/filterModule.js';
 import * as addFilterModule from '/modules/addFilterModule.js';
 
-// Wacht op het DOMContentLoaded-evenement om ervoor te zorgen dat alle DOM-elementen gereed zijn
+// wacht tot de DOM geladen is
 document.addEventListener('DOMContentLoaded', () => {
-    // Initialize filter and set up event listeners after data is fetched
+    // initFilter met fetch
     filter.initFilter().then(() => {
-      // Set up the event listener for the filterButton
       filter.setupFilterButton();
-  
-      // Add event listeners for dropdowns
+      
+      // Eventlisteners voor de dropdowns
       document.getElementById('provincieDropdown').addEventListener('change', function() {
+        // update deze met info van de provincie, locatie en landschap
         filter.updateDropdownOptions('provincieDropdown', this.value);
       });
   
@@ -23,7 +23,7 @@ document.addEventListener('DOMContentLoaded', () => {
         filter.updateDropdownOptions('landschapDropdown', this.value);
       });
   
-      // Initialize the addFilter functionality
+      // initalize filter, mogelijk voor de extra filter
       addFilterModule.initializeAddFilter();
     });
   });
