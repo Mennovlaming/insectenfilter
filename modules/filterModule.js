@@ -52,11 +52,11 @@ export function filterData() {
   
 }
 
-export function initFilter() {
+export function initFilter() { 
   // Promise, zo ja, resolve, zo nee, reject
   return new Promise((resolve, reject) => {
     //fetch de dataset
-    fetch('./data/data21.json')
+    fetch('./static/data21.json')
       .then(response => response.json())
       .then(data => {
         dataset = data;
